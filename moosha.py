@@ -167,7 +167,7 @@ if __name__ == "__main__":
         mail.starttls()
 
         #login
-        mail.login('bhabburkaustik@gmail.com', 'Kaustik123')
+        mail.login('your-email', 'your-password')
 
         #send message
         mail.sendmail('FROM', 'TO', content)
