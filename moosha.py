@@ -7,27 +7,70 @@ import os
 import smtplib
 import wolframalpha
 from gtts import gTTS
+from tkinter import *
+from PIL import Image
+import subprocess
+import os
+import sys
+from PIL import Image, ImageTk
 
 
+print("enter your name")
+
+#root = tkinter.Tk()
+#inname ="tenor.gif"
+#root.mainloop()
+ 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
-# print(voices[1].id)
+#print(voices[1].id)
 engine.setProperty('voice', voices[1].id)
+
+
+def userstart():
+    print("enter your name")
+    speak("sir pls enter your name")
+          
+
 
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
-
+    
+user = input()
 def wishMe():
+    speak("Welcome back sir")
     hour = int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
-        speak("Good morning kaustik")
-    elif hour>=12 and hour<4:
-        speak("Good afternoon kaustik")
-    else:
-        speak("Good Evening kaustik")
+    print(hour)
+    year = int(datetime.datetime.now().year)
+    month = int(datetime.datetime.now().month)
+    date = int(datetime.datetime.now().day)
+    Time = datetime.datetime.now().strftime("%I:%M:%S") 
+    print(Time)
+    print(date)
+    print(month)
+    print(year)
+    speak("the current Time is")
+    speak(Time)
+    speak("the current Date is")
+    speak(date)
+    speak(month)
+    speak(year)
+    if hour>=6 and hour<12:
+        speak("Good Morning!" + user)
+        speak ("iam your assistant moosha")
 
-        speak("I am your Assistant moosha")
+    elif hour>=12 and hour<18:
+        speak("Good Afternoon!" + user)
+        speak ("iam your assistant moosha")
+
+    elif hour>=18 and hour<24:
+        speak("Good Evening !" + user)
+        speak ("iam your assistant moosha")
+
+    else:
+        speak("Good Night!" + user)
+        speak ("iam your assistant moosha")
         
 def assistant_speaks(output): 
     global num 
@@ -59,17 +102,10 @@ def takeCommand():
         print("user said : ", query)
     except Exception as e:
         print(e)
-        speak("Sorry kaustik, can you repeat that again?")
+        speak("Sorry," + user)
+        speak("can you repeat that again?")
         return "None"
     return query
-
-def sendEmail(to, content):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login('gmail', 'password file')
-    server.sendmail('sarika.bhabbur1@gmail.com',to, content)
-    server.close()
 
 
 if __name__ == "__main__":
@@ -80,9 +116,8 @@ if __name__ == "__main__":
         if 'wikipedia' in query:
             speak('Searching Wikipedia...')
             query = query.replace("wikipedia", "")
-            results = wikipedia.summary(query, sentences=2)
+            results = wikipedia(query, sentences=2)
             speak("According to Wikipedia")
-            print(results)
             speak(results)
 
         elif 'open youtube' in query:
@@ -106,27 +141,53 @@ if __name__ == "__main__":
         elif 'open code' in query:
             codepath = "C:\\Users\\Smartboy\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
             os.startfile(codepath)
+        
+       
+        elif 'open notepad' in query:
+            notepadpath = "%windir%\system32\notepad.exe"
+            os.startfile(notepad)
+            engine = pyttsx3.init() 
+            engine.say(command)  
+            engine.runAndWait() 
+      
+         
+      
+                   
+        
             
         elif "who made you"  in query: 
-            speak("I have been created by my goodfather sir kaustik. who is the greatest computer scientist")
+            speak("I have been created by my godfather sir kaustik. who is the greatest computer scientist")
            
             
             
         elif  "define yourself" in query: 
-            speak("iam your assiant hwho makes your work easir")
+            speak("iam your Assistant hwho makes your work easir and makes you lazy")
+            
+         
+            
+        elif  "what is your name" in query: 
+            speak("my name is moosha who is also sir kaustik bhabbur's pet sir moosha")
             
             
+        elif  "who is pm of india" in query: 
+            speak("narendra modi")
+            
+            
+        elif  "what doo you think  about india" in query: 
+            speak("what will i think  its my birthplace and my godfather sir kaustik's too..")   
+          
         elif "calculate" in query: 
               
             # write your wolframalpha app_id here 
             app_id = "TA5L4V-KPPGYA6GE4" 
-            client = wolframalpha.Client('your-appid') 
+            client = wolframalpha.Client('TA5L4V-KPPGYA6GE4') 
   
             indx = query.split().index('calculate') 
             query = query.split()[indx + 1:] 
             res = client.query(' '.join(query)) 
             answer = next(res.results).text 
             speak("The answer is " + answer) 
+           
             
         
         
@@ -136,3 +197,4 @@ if __name__ == "__main__":
         
         else :
             webbrowser.open(query)
+            
