@@ -13,18 +13,76 @@ import subprocess
 import os
 import sys
 from PIL import Image, ImageTk
+import pyautogui
+from sclib import SoundcloudAPI, Track, Playlist
 
 
-print("enter your name")
 
+def data():
+    data_source = 'kaggle' # alphavantage or kaggle
+
+    if data_source == 'alphavantage':
+        # ====================== Loading Data from Alpha Vantage ==================================
+
+        api_key = '<OCE7PAUAGN24EUHE>'
+
+        # American Airlines stock market prices
+        ticker = "AAL"
+
+        # JSON file with all the stock market data for AAL from the last 20 years
+        url_string = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=full&apikey=%s"%(ticker,api_key)
+
+        # Save data to this file
+        file_to_save = 'stock_market_data-%s.csv'%ticker
+
+        # If you haven't already saved data,
+        # Go ahead and grab the data from the url
+        # And store date, low, high, volume, close, open values to a Pandas DataFrame
+        if not os.path.exists(file_to_save):
+            with urllib.request.urlopen(url_string) as url:
+                data = json.loads(url.read().decode())
+                # extract stock market data
+                data = data['Time Series (Daily)']
+                df = pd.DataFrame(columns=['Date','Low','High','Close','Open'])
+                for k,v in data.items():
+                    date = dt.datetime.strptime(k, '%Y-%m-%d')
+                    data_row = [date.date(),float(v['3. low']),float(v['2. high']),
+                                float(v['4. close']),float(v['1. open'])]
+                    df.loc[-1,:] = data_row
+                    df.index = df.index + 1
+            print('Data saved to : %s'%file_to_save)        
+            df.to_csv(file_to_save)
+
+        # If the data is already there, just load it from the CSV
+        else:
+            print('File already exists. Loading data from CSV')
+            df = pd.read_csv(file_to_save)
+
+    else:
+
+        # ====================== Loading Data from Kaggle ==================================
+        # You will be using HP's data. Feel free to experiment with other data.
+        # But while doing so, be careful to have a large enough dataset and also pay attention to the data normalization
+        df = pd.read_csv(os.path.join('Stocks','hpq.us.txt'),delimiter=',',usecols=['Date','Open','High','Low','Close'])
+        print('Loaded data from the Kaggle repository')
+        
+        
+        df = df.sort_values('Date')
+
+# Double check the result
+        df.head()
+        
 #root = tkinter.Tk()
 #inname ="tenor.gif"
 #root.mainloop()
+
+print("enter your name")
  
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 #print(voices[1].id)
 engine.setProperty('voice', voices[1].id)
+
 
 
 def userstart():
@@ -106,6 +164,10 @@ def takeCommand():
         speak("can you repeat that again?")
         return "None"
     return query
+    
+   
+
+
 
 
 if __name__ == "__main__":
@@ -141,20 +203,44 @@ if __name__ == "__main__":
         elif 'open code' in query:
             codepath = "C:\\Users\\Smartboy\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
             os.startfile(codepath)
-        
-       
+          
         elif 'open notepad' in query:
             notepadpath = "%windir%\system32\notepad.exe"
             os.startfile(notepad)
             engine = pyttsx3.init() 
             engine.say(command)  
             engine.runAndWait() 
-      
-         
-      
-                   
-        
             
+            
+        elif 'write in notepad' in query:
+            
+            notepadpath = "%windir%\system32\notepad.exe"
+            os.startfile(notepadpath)
+            engine = pyttsx3.init() 
+            engine.say(command)             
+            engine.runAndWait()
+            speak('name your file')
+            input()
+            f= open(user18+".txt","w+")
+            speak('your file craeted')
+            f.write = write()
+                
+            
+            
+        elif 'play music' in query:
+        
+            api = SoundcloudAPI()  # never pass a Soundcloud client ID that did not come from this library
+
+            track = api.resolve('https://soundcloud.com/itsmeneedle/sunday-morning')
+
+            assert type(track) is Track
+
+            filename = f'./{track.artist} - {track.title}.mp3'
+
+            with open(filename, 'wb+') as fp:
+            
+                track.write_mp3_to(fp)
+
         elif "who made you"  in query: 
             speak("I have been created by my godfather sir kaustik. who is the greatest computer scientist")
            
@@ -162,8 +248,6 @@ if __name__ == "__main__":
             
         elif  "define yourself" in query: 
             speak("iam your Assistant hwho makes your work easir and makes you lazy")
-            
-         
             
         elif  "what is your name" in query: 
             speak("my name is moosha who is also sir kaustik bhabbur's pet sir moosha")
@@ -179,7 +263,7 @@ if __name__ == "__main__":
         elif "calculate" in query: 
               
             # write your wolframalpha app_id here 
-            app_id = "TA5L4V-KPPGYA6GE4" 
+            
             client = wolframalpha.Client('TA5L4V-KPPGYA6GE4') 
   
             indx = query.split().index('calculate') 
@@ -187,14 +271,39 @@ if __name__ == "__main__":
             res = client.query(' '.join(query)) 
             answer = next(res.results).text 
             speak("The answer is " + answer) 
+            
+            
+        elif 'show data' in query:
+        
+            data()
+           
+            
            
             
         
         
         elif 'close' in query:
-            speak("see you soon kaustik")
+            speak("see you soon " + user)
             exit()
         
         else :
             webbrowser.open(query)
+            
+            
+            
+root=Tk()
+
+#set width and height
+
+canvas=Canvas(root,width=300,height=160)
+
+#give this image path. image should be in png format.
+
+#Example: "C:\\Users\\ASUS\\OneDrive\\Pictures\\image.png"
+
+image=ImageTk.PhotoImage(Image.open("C:\\Users\\kaustik\\Downloads\\loader-ai-siri_2x.gif"))
+
+canvas.create_image(0,0,anchor=NW,image=image)
+canvas.pack()
+root.mainloop()
             
